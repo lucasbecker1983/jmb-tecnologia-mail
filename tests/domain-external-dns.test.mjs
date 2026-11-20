@@ -138,3 +138,29 @@ test("the explicit skip switch keeps its old meaning", async () => {
 	assert.equal(globalThis.__inserted.sendingProvider, "none");
 	assert.equal(globalThis.__inserted.dnsSkipped, true);
 });
+
+const adoptMocks = {
+	"drizzle-orm": "export const eq=(c,v)=>({eq:[c,v]});export const and=(...a)=>({and:a});export const ne=(c,v)=>({ne:[c,v]});",
+	"@/db/schema": "export const domains={id:'id',zoneId:'zoneId',userId:'userId'};",
+	"@/db": "const q={from(){return q},where(){return q},limit(){return Promise.resolve([])}};export function getDb(){return {select(){return q},update(){return {set(v){globalThis.__updates.push(v);return {where(){return Promise.resolve()}}}}}}}",
+	"@/lib/domains/provision": "export const isManualZone=(id)=>id==='manual';",
+	"@/lib/domains/dns-host": "export async function checkDomainHosting(){return globalThis.__hosting}",
+	"@/lib/runtime": "export const hasCloudflareCredentials=(env)=>!!env.CF_TOKEN;",
+};
+const { adoptCloudflareZone } = await bundle("export { adoptCloudflareZone } from './src/lib/domains/adopt-zone';", "adopt-zone", adoptMocks);
+
+test("a skipped domain whose DNS is elsewhere becomes external with a clear message instead of 'Zone not found'", async () => {
+	globalThis.__updates = [];
+	globalThis.__hosting = { external: true, zone: { id: "manual", name: "infinitytea.com.br" }, dnsHost: { provider: "Umbler", nameservers: [], cloudflare: false } };
+	const domain = { id: "d1", userId: "u1", hostname: "infinitytea.com.br", zoneId: "manual", dnsSkipped: true, status: "pending" };
+	await assert.rejects(adoptCloudflareZone(env, domain), /está em Umbler, fora da Cloudflare/);
+	assert.deepEqual(globalThis.__updates, [{ dnsSkipped: false, status: "active" }]);
+});
+
+test("a skipped domain that is on this Cloudflare account is still adopted", async () => {
+	globalThis.__updates = [];
+	globalThis.__hosting = { external: false, zone: { id: "z9", name: "example.com" } };
+	const adopted = await adoptCloudflareZone(env, { id: "d2", userId: "u1", hostname: "example.com", zoneId: "manual", dnsSkipped: true, status: "pending" });
+	assert.equal(adopted.zoneId, "z9");
+	assert.deepEqual(globalThis.__updates, [{ zoneId: "z9" }]);
+});

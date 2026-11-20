@@ -2,7 +2,7 @@ import { and, eq, ne } from "drizzle-orm";
 import { getDb } from "@/db";
 import { domains } from "@/db/schema";
 import { isManualZone } from "@/lib/domains/provision";
-import { preflightDomain } from "@/lib/domains/preflight";
+import { checkDomainHosting } from "@/lib/domains/dns-host";
 import type { DomainRow } from "@/lib/domains/types";
 import { hasCloudflareCredentials } from "@/lib/runtime";
 
@@ -14,8 +14,20 @@ import { hasCloudflareCredentials } from "@/lib/runtime";
  */
 export async function adoptCloudflareZone(env: CloudflareEnv, domain: DomainRow): Promise<DomainRow> {
 	if (!isManualZone(domain.zoneId) || !hasCloudflareCredentials(env)) return domain;
-	const { zone } = await preflightDomain(env, domain.hostname);
 	const db = getDb(env);
+	const hosting = await checkDomainHosting(env, domain.hostname);
+	if (hosting.external) {
+		// JMB fork: the DNS is elsewhere, so this is an external domain, not a skipped one.
+		// Mark it so its page lists the records to create by hand instead of offering Cloudflare setup.
+		if (domain.dnsSkipped || domain.status !== "active") {
+			await db.update(domains).set({ dnsSkipped: false, status: "active" }).where(eq(domains.id, domain.id));
+		}
+		const where = hosting.dnsHost?.provider ?? "seu provedor de DNS";
+		throw new Error(
+			`O DNS de ${domain.hostname} está em ${where}, fora da Cloudflare, então o app não consegue criar registros nele. Recarregue a página: ela passa a listar os registros para você criar no painel de ${where}.`,
+		);
+	}
+	const { zone } = hosting;
 	const [claimed] = await db
 		.select({ id: domains.id })
 		.from(domains)
