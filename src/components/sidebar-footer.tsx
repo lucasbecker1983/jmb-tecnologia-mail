@@ -48,6 +48,7 @@ export function PoweredBy({ className = "px-1" }: { className?: string }) {
         >
           Mailflare v{packageJson.version}
         </a>
+        {" · JMB Tecnologia"}
       </p>
 	);
 }

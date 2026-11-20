@@ -1,6 +1,7 @@
 {
   "name": "mailflare",
   "version": "0.5.5",
+  "author": "JMB Tecnologia",
   "private": true,
   "scripts": {
     "dev": "npm run db:bundle && vp dev --port 3000",
