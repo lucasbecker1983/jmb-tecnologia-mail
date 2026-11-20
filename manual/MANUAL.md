@@ -279,6 +279,31 @@ Para domínios que ficam no Registro.br, na Umbler, na Locaweb etc. O DNS **não
 
 > Trocar o MX faz o provedor antigo parar de receber. Crie as caixas antes e troque o MX por último.
 
+### 7.3 Reserva do Resend: Maileroo (recomendado)
+
+Se o Resend falhar (fora do ar, limite diário estourado, chave recusada), o sistema **envia automaticamente pelo Maileroo**. Nos domínios fora da Cloudflare, o Maileroo também pode ser um **MX de reserva**, que recebe se o Resend estiver inacessível. O plano grátis do Maileroo tem 3.000 envios e 1.000 recebimentos por mês, em até 2 domínios.
+
+1. Crie a conta em <https://maileroo.com> e, em **Domains**, adicione o domínio.
+2. Crie no DNS os registros que o Maileroo mostrar:
+   - **DKIM** (`smtp._domainkey`);
+   - **SPF:** acrescente `include:spf.maileroo.com` ao TXT `v=spf1` que já existe. **Nunca crie um segundo registro SPF.**
+3. Em **Sending Keys** do domínio, crie uma chave e guarde como secret (um par domínio → chave, em JSON):
+
+   ```bash
+   set -a; . ./.env.deploy; set +a
+   printf '%s' '{"suaempresa.com.br":"CHAVE_DO_DOMINIO"}' | npx wrangler secret put MAILEROO_SENDING_KEYS
+   ```
+
+4. **Só para domínio com DNS fora da Cloudflare (recebimento de reserva):**
+   - Gere um token: `openssl rand -hex 32`.
+   - Guarde como secret: `printf '%s' 'TOKEN' | npx wrangler secret put MAILEROO_WEBHOOK_TOKEN`.
+   - No Maileroo, crie uma rota de entrada **Catch All** com destino **Webhook**: `https://SEU-ENDERECO/api/inbound/maileroo?token=TOKEN`.
+   - No provedor de DNS, adicione o MX do Maileroo com **prioridade maior** que a do Resend (ex.: Resend 10, Maileroo 20). Faça isso **depois** de concluir o Setup do Resend, que estranha MX de outro serviço.
+
+> **Nunca** coloque o MX do Maileroo num domínio que recebe pela Cloudflare. É a mesma armadilha do MX do Resend (seção 7.1).
+
+> **Limitações da reserva:** o Maileroo troca o identificador (Message-ID) dos e-mails, então respostas a mensagens enviadas pela reserva podem não ficar agrupadas na mesma conversa. Imagens dentro do corpo podem chegar como anexo comum. O MX de reserva só ajuda quando o Resend está inacessível, não quando ele aceita a mensagem e falha depois.
+
 ---
 
 ## 8. Caixas de e-mail e contas

@@ -3,6 +3,13 @@
 Versão própria (fork) do [Mailflare](https://github.com/hieunc229/mailflare), mantida pela JMB Tecnologia sob a licença AGPLv3.
 O histórico do projeto original fica na pasta `changelog/`.
 
+## v2026.11.20-8
+
+- **Maileroo como reserva do Resend.** Se o Resend recusar por limite (429), chave (401/403) ou falha dele (5xx), a mensagem sai pelo Maileroo na mesma tentativa; erro de rede repete o Resend uma vez com a mesma chave de idempotência antes da reserva; erro da própria mensagem (400/422) nunca vai para a reserva. Chaves: `MAILEROO_SENDING_KEYS` (JSON domínio→chave) ou `MAILEROO_API_KEY`. Cada uso da reserva fica no log.
+- **Recebimento pelo Maileroo** em `/api/inbound/maileroo?token=…` (secret `MAILEROO_WEBHOOK_TOKEN`): baixa a mensagem original, usa o mesmo processamento do Resend, valida e apaga a cópia no Maileroo depois de entregar.
+- Limitações: o Maileroo não preserva o Message-ID (respostas podem não agrupar na conversa); mapeamento de imagens inline não documentado.
+- Manual: seção 7.3. Testes: `tests/maileroo.test.mjs`.
+
 ## v2026.11.20-7
 
 - **Domínios fora da Cloudflare detectados automaticamente.** Ao adicionar um domínio, o sistema consulta a zona na Cloudflare; se ela não existir, consulta os servidores NS, mostra onde está o DNS (Registro.br, Umbler, Locaweb, HostGator, GoDaddy e outros) e grava o domínio como externo: ativo, recebendo e enviando pelo Resend, com a configuração do Resend disparada sozinha. Vale no painel, no onboarding, no primeiro `/setup` e na API.

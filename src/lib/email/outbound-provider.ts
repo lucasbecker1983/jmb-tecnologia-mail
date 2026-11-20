@@ -4,6 +4,7 @@ import { appSettings, domains } from "@/db/schema";
 import { requireAwsConfig } from "@/lib/aws/config";
 import { sendSesEmail } from "@/lib/aws/ses";
 import { getEmailAddress } from "@/lib/email/address";
+import { ProviderHttpError, sendWithMailerooFallback } from "@/lib/email/maileroo";
 import { fetchSentMessageId, resendClient, resendOmittedHeaders, resendSetsMessageId, type ResendClient } from "@/lib/email/resend-api";
 import type { OutboundProviderConfig, OutboundProviderMessage, ResendKeyStatus } from "@/lib/email/outbound-provider-types";
 
@@ -104,7 +105,7 @@ async function sendWithResend(
 		body: JSON.stringify(resendPayload(message, setsMessageId ? mintedId : null, resendOmittedHeaders(env))),
 	});
 	const body = (await response.json().catch(() => null)) as { id?: string; message?: string } | null;
-	if (!response.ok) throw new Error(`Resend: ${body?.message ?? `request failed (${response.status})`}`);
+	if (!response.ok) throw new ProviderHttpError(`Resend: ${body?.message ?? `request failed (${response.status})`}`, response.status);
 	if (setsMessageId || !body?.id) return { messageId: mintedId };
 	// Without our own header, thread replies against the ID the provider assigned.
 	// It can be missing while the send is still queued; the minted ID is the fallback.
@@ -117,7 +118,10 @@ export async function sendThroughProvider(
 	message: OutboundProviderMessage,
 	idempotencyKey?: string,
 ): Promise<{ messageId: string }> {
-	if (config.provider === "resend") return sendWithResend(env, resendClient(env, config.apiKey), message, idempotencyKey);
+	if (config.provider === "resend") {
+		const client = resendClient(env, config.apiKey);
+		return sendWithMailerooFallback(env, message, () => sendWithResend(env, client, message, idempotencyKey));
+	}
 	if (config.provider === "ses") return sendSesEmail(config.config, message);
 	const response = await env.EMAIL.send({
 		from: message.from,
