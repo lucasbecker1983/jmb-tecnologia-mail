@@ -16,7 +16,8 @@ A JMB Tecnologia mantém esta versão com **todas as funções liberadas**, sem 
 - caixas de e-mail pessoais e compartilhadas;
 - encaminhamento de e-mail;
 - personalização da marca (logo e cores);
-- vários domínios na mesma instalação.
+- vários domínios na mesma instalação;
+- interface em **português do Brasil** por padrão (outros idiomas no seletor de idioma).
 
 O projeto é **distribuído de graça para amigos e parceiros. Ele não é vendido.** O código é aberto, sob a licença AGPLv3 (veja a seção 11).
 

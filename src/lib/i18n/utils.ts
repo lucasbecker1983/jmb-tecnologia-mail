@@ -1,13 +1,13 @@
 import en from "./en.json";
-import { DEFAULT_LOCALE, locales } from "./locales";
+import { DEFAULT_LOCALE, FALLBACK_LOCALE, locales } from "./locales";
 import type { Locale, Messages, PluralKey, TranslationKey } from "./types";
 
-export { DEFAULT_LOCALE } from "./locales";
+export { DEFAULT_LOCALE, FALLBACK_LOCALE } from "./locales";
 export const LOCALE_COOKIE = "mailflare-locale";
 export const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 export function resolveLocale(value: unknown): Locale {
-	return typeof value === "string" && Object.hasOwn(locales, value) ? value as Locale : DEFAULT_LOCALE;
+	return typeof value === "string" && Object.hasOwn(locales, value) ? value as Locale : FALLBACK_LOCALE;
 }
 
 export function getDirection(locale: Locale): "ltr" | "rtl" {

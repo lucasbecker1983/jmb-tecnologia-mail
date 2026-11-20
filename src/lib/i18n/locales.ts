@@ -48,4 +48,6 @@ export const locales = {
 
 export type Locale = keyof typeof locales;
 export const DEFAULT_LOCALE = "en" satisfies Locale;
+// JMB fork: visitors without a saved language see Brazilian Portuguese; English stays the bundled base catalog.
+export const FALLBACK_LOCALE = "pt-BR" satisfies Locale;
 export const supportedLocales = Object.keys(locales) as Locale[];

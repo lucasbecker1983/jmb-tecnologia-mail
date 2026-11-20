@@ -3,6 +3,10 @@
 Versão própria (fork) do [Mailflare](https://github.com/hieunc229/mailflare), mantida pela JMB Tecnologia sob a licença AGPLv3.
 O histórico do projeto original fica na pasta `changelog/`.
 
+## v2026.11.20-4
+
+- Idioma padrão agora é **português do Brasil**: quem ainda não escolheu idioma vê o sistema em PT-BR. O inglês continua disponível no seletor de idioma e segue como catálogo base das traduções.
+
 ## v2026.11.20-3
 
 - Manual de instalação e uso em português: `manual/MANUAL.md` e `manual/MANUAL.pdf` (gerado com `node manual/gerar-pdf.mjs`).
