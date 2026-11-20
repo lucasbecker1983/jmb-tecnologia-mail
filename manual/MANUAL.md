@@ -235,7 +235,7 @@ Se aparecer erro, **recarregue a página (F5)** antes de tentar de novo. A pági
 
 ## 7. Domínios
 
-Cada domínio usa um caminho diferente para receber, dependendo de onde está o DNS dele. Envio é sempre pelo **Resend**.
+Ao adicionar um domínio (**Administração → Domínios → Adicionar domínio**), o sistema **descobre sozinho onde está o DNS** e escolhe o caminho. Envio é sempre pelo **Resend**.
 
 | Onde está o DNS do domínio | Recebe por | Envia por |
 |---|---|---|
@@ -261,14 +261,19 @@ O `/setup` já liga o recebimento. Confira estes pontos:
 
 ### 7.2 Domínio com DNS em outro provedor
 
-Use para domínios que você não quer mover para a Cloudflare. Você só aponta os registros de e-mail.
+Para domínios que ficam no Registro.br, na Umbler, na Locaweb etc. O DNS **não sai de onde está**: você só cria alguns registros lá.
 
-1. **Admin → Domains → New domain**: digite o domínio e marque **"Skip DNS setup"**.
-2. Abra o domínio na lista:
-   - em **"Setup receiving email"**, ligue o card **Resend** e clique em **Setup**;
-   - em **"Setup sending email"**, ligue o card **Resend** e clique em **Setup**.
-3. A tela lista os registros que faltam: **MX** de recebimento, **TXT** de DKIM e os registros de envio. **Copie cada um no painel do seu provedor de DNS atual** e apague os MX antigos.
-4. Volte ao aplicativo e clique em **Check status** até tudo ficar verde. A propagação do DNS pode levar de alguns minutos a algumas horas.
+1. **Administração → Domínios → Adicionar domínio**: digite o domínio e clique fora do campo. **Não ligue "Pular configuração de DNS".**
+2. Aparece o aviso azul **"DNS em Registro.br"** (ou o provedor detectado). Clique em **Adicionar domínio**.
+3. O sistema já configura o Resend sozinho, nos dois sentidos. Abra o domínio na lista. Os cards do **Resend** em "Setup receiving email" e "Setup sending email" mostram os registros que faltam: **MX** de recebimento, **TXT** de DKIM e os registros de envio.
+4. **Crie cada registro no painel do seu provedor de DNS**, apagando MX antigos, se houver. No Registro.br: entre em <https://registro.br>, abra o domínio, vá em **DNS → Editar zona** e use **Nova entrada** para cada registro. No campo de nome, coloque só a parte antes do domínio; para a raiz, deixe em branco.
+5. Volte ao aplicativo e clique em **Check status** até tudo ficar verde. A propagação pode levar de alguns minutos a algumas horas.
+
+> O app **não consegue criar os registros** no Registro.br ou em outro provedor; ele só lista o que precisa ser criado.
+
+> Cada domínio externo usa uma das **3 vagas grátis** do Resend.
+
+> Se o aviso disser que o DNS está **na Cloudflare, mas o token não enxerga a zona**, o domínio está em outra conta Cloudflare ou fora das permissões do `CF_TOKEN`. Ajuste o token (seção 4.4) em vez de seguir como externo.
 
 > Aqui o MX do Resend **é o correto**, porque é ele quem recebe esse domínio.
 

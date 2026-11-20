@@ -1,4 +1,4 @@
-export type DnsQueryType = "MX" | "TXT" | "A" | "AAAA" | "CNAME";
+export type DnsQueryType = "MX" | "TXT" | "A" | "AAAA" | "CNAME" | "NS";
 
 type DohAnswer = {
 	name: string;
@@ -17,6 +17,7 @@ const DOH_TIMEOUT_MS = 5000;
 
 const DNS_RECORD_TYPES: Record<DnsQueryType, number> = {
 	A: 1,
+	NS: 2,
 	AAAA: 28,
 	CNAME: 5,
 	MX: 15,

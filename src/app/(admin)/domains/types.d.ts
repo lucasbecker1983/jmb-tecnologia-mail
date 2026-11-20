@@ -18,6 +18,9 @@ export type Domain = {
 export type DomainPreflight = {
 	hostname: string;
 	zone: { id: string; name: string };
+	/** DNS is outside this Cloudflare account (JMB fork). */
+	external?: boolean;
+	dnsHost?: { provider: string | null; nameservers: string[] };
 };
 
 export type DomainPreflightResponse = {

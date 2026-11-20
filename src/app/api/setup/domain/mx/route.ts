@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { hasAdminAccount } from "@/lib/auth/setup";
 import { getEnv } from "@/lib/cloudflare";
-import { preflightSetupDomain } from "@/lib/domains/preflight";
+import { checkDomainHosting } from "@/lib/domains/dns-host";
 import { isManualZone } from "@/lib/domains/provision";
 import { hasConflictingMxRecords } from "@/lib/domains/mx-records";
 import { setupDomainSchema } from "@/lib/validators";
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 	}
 
 	try {
-		const domain = await preflightSetupDomain(env, parsed.data.hostname, { skipDns: parsed.data.skipDns });
+		const domain = await checkDomainHosting(env, parsed.data.hostname, { skipDns: parsed.data.skipDns });
 		// A manual domain has no Cloudflare zone to inspect, so nothing here conflicts.
 		if (isManualZone(domain.zone.id)) return NextResponse.json({ hasExistingMx: false });
 		const hasExistingMx = await hasConflictingMxRecords(

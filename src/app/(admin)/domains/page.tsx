@@ -24,6 +24,8 @@ import DomainItemCard from "./DomainItemCard";
 import { SectionRowSkeleton } from "@/components/page-skeletons";
 import { checkDomain } from "./utils";
 import { confirmMxReplacement, createDomain, isMxConflictError } from "./api";
+import ExternalDnsNotice from "./ExternalDnsNotice";
+import { setupExternalDomainMail } from "./external-dns";
 import { Select } from "@/components/ui/select";
 
 export default function DomainsPage() {
@@ -42,6 +44,8 @@ export default function DomainsPage() {
   const [sendingProvider, setSendingProvider] = useState<SendingProvider>("cloudflare");
   const [receivingProvider, setReceivingProvider] = useState<ReceivingProvider>("cloudflare");
   const [domainCheckError, setDomainCheckError] = useState<string | null>(null);
+  // Bumped whenever the hostname or the skip switch changes, so a check that finishes late is ignored.
+  const checkSeq = useRef(0);
   const [createOpen, setCreateOpen] = useState(false);
   const [setupRecord, setSetupRecord] = useState<DnsAuthRecord | null>(null);
   const [setupMessage, setSetupMessage] = useState<string | null>(null);
@@ -78,13 +82,15 @@ export default function DomainsPage() {
       }
       if (!checkedDomain) throw new Error(t("onboarding.domainCheckFailed"));
 
-      return createDomain({
+      const created = await createDomain({
         hostname: checkedDomain.hostname,
         enableRouting: true,
         skipDns,
         sendingProvider,
         receivingProvider,
       });
+      await setupExternalDomainMail(created.domain);
+      return created;
     },
     onSuccess: () => {
       setHostname("");
@@ -260,9 +266,11 @@ export default function DomainsPage() {
     const normalized = hostname.toLowerCase().trim();
     if (skipDns || normalized.length < 3 || domainCheck?.hostname === normalized) return;
 
+    const seq = ++checkSeq.current;
     setDomainChecking(true);
     setDomainCheckError(null);
     const result = await checkDomain(normalized);
+    if (seq !== checkSeq.current) return;
     setDomainChecking(false);
     if (!result.ok || !result.domain) {
       setDomainCheck(null);
@@ -305,6 +313,8 @@ export default function DomainsPage() {
                   id="hostname"
                   value={hostname}
                   onChange={(e) => {
+                    checkSeq.current++;
+                    setDomainChecking(false);
                     setHostname(e.target.value);
                     if (domainCheck?.hostname !== e.target.value.toLowerCase().trim()) {
                       setDomainCheck(null);
@@ -325,12 +335,15 @@ export default function DomainsPage() {
                   id="skip-dns"
                   checked={skipDns}
                   onCheckedChange={(checked) => {
+                    checkSeq.current++;
+                    setDomainChecking(false);
                     setSkipDns(checked);
                     setDomainCheckError(null);
+                    create.reset();
                   }}
                 />
               </div>
-              {!skipDns && (
+              {!skipDns && !domainCheck?.external && (
                 <>
               <div className="flex items-center justify-between gap-4 rounded-xl bg-neutral-50 px-4 py-3">
                 <div>
@@ -385,7 +398,8 @@ export default function DomainsPage() {
               </div>
                 </>
               )}
-              {domainCheck && !skipDns && (
+              {domainCheck?.external && !skipDns && <ExternalDnsNotice dnsHost={domainCheck.dnsHost} />}
+              {domainCheck && !skipDns && !domainCheck.external && (
                 <div className="flex items-center gap-3 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">
                   <CheckCircle2 className="h-4 w-4" />
                   {t("setup.domainFound", { zone: domainCheck.zone.name })}

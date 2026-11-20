@@ -3,6 +3,14 @@
 Versão própria (fork) do [Mailflare](https://github.com/hieunc229/mailflare), mantida pela JMB Tecnologia sob a licença AGPLv3.
 O histórico do projeto original fica na pasta `changelog/`.
 
+## v2026.11.20-7
+
+- **Domínios fora da Cloudflare detectados automaticamente.** Ao adicionar um domínio, o sistema consulta a zona na Cloudflare; se ela não existir, consulta os servidores NS, mostra onde está o DNS (Registro.br, Umbler, Locaweb, HostGator, GoDaddy e outros) e grava o domínio como externo: ativo, recebendo e enviando pelo Resend, com a configuração do Resend disparada sozinha. Vale no painel, no onboarding, no primeiro `/setup` e na API.
+- Domínio com NS da Cloudflare mas sem zona visível para o token gera um aviso para ajustar o `CF_TOKEN`, em vez de virar externo. Erros da API da Cloudflare continuam aparecendo.
+- Corrigido: um resultado atrasado da verificação de domínio podia mostrar "Zone not found" depois de ligar "Pular configuração de DNS".
+- "Pular configuração de DNS" traduzido; descrição do diálogo de domínio atualizada.
+- Testes novos em `tests/domain-external-dns.test.mjs`.
+
 ## v2026.11.20-6
 
 - Repositório renomeado para https://github.com/lucasbecker1983/jmb-tecnologia-mail (o endereço antigo `mailflare-jmb` redireciona). Links do rodapé, do `package.json` e do manual atualizados.

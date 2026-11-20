@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth/cookies";
 import { getEnv } from "@/lib/cloudflare";
-import { preflightSetupDomain } from "@/lib/domains/preflight";
+import { checkDomainHosting } from "@/lib/domains/dns-host";
 import { setupDomainSchema } from "@/lib/validators";
 
 export async function POST(request: Request) {
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 	}
 
 	try {
-		return NextResponse.json({ domain: await preflightSetupDomain(env, parsed.data.hostname, { skipDns: parsed.data.skipDns }) });
+		return NextResponse.json({ domain: await checkDomainHosting(env, parsed.data.hostname, { skipDns: parsed.data.skipDns }) });
 	} catch (error) {
 		const message = error instanceof Error ? error.message : "Domain check failed";
 		return NextResponse.json({ error: message }, { status: 502 });

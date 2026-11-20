@@ -19,7 +19,7 @@ import { getManualDomainDns } from "@/lib/domains/manual-dns";
 import { rollbackDomainProvisioning } from "@/lib/domains/rollback";
 import type { DomainProvisioningChanges } from "@/lib/domains/types";
 import { findSendingSubdomain } from "@/lib/domains/sending-status";
-import { preflightDomain } from "@/lib/domains/preflight";
+import { checkDomainHosting } from "@/lib/domains/dns-host";
 import { normalizeHostname } from "@/lib/domains/utils";
 import { hasCloudflareCredentials } from "@/lib/runtime";
 
@@ -43,7 +43,7 @@ export async function addDomainForUser(
 	env: CloudflareEnv,
 	userId: string,
 	hostname: string,
-	options?: { enableRouting?: boolean; enableSending?: boolean; replaceMxRecords?: boolean; skipDns?: boolean; receivingProvider?: "none" | "cloudflare" | "resend" | "ses"; sendingProvider?: "none" | "cloudflare" | "resend" | "ses" },
+	options?: { enableRouting?: boolean; enableSending?: boolean; replaceMxRecords?: boolean; skipDns?: boolean; externalDns?: boolean; receivingProvider?: "none" | "cloudflare" | "resend" | "ses"; sendingProvider?: "none" | "cloudflare" | "resend" | "ses" },
 ): Promise<{
 	domain: typeof domains.$inferSelect;
 	dns: DomainDnsView;
@@ -55,25 +55,34 @@ export async function addDomainForUser(
 	if (claimedHostname && claimedHostname.userId !== userId) {
 		throw new Error("Domain is already registered");
 	}
-	if (!options?.skipDns && hasCloudflareCredentials(env)) {
-		const { zone } = await preflightDomain(env, normalizedHostname);
-		const [claimedZone] = await db.select({ userId: domains.userId }).from(domains).where(and(
-			eq(domains.zoneId, zone.id),
-			ne(domains.userId, userId),
-		)).limit(1);
-		if (claimedZone) {
-			throw new Error("Cloudflare zone is already registered to another account");
+	const skipDns = options?.skipDns === true;
+	// JMB fork: DNS outside this Cloudflare account is detected here, so every caller (admin, onboarding,
+	// first-run setup, API) gets it. Such a domain is recorded on a manual zone, active, with mail through Resend.
+	let externalDns = options?.externalDns === true && !skipDns;
+	if (!skipDns && !externalDns && hasCloudflareCredentials(env)) {
+		const hosting = await checkDomainHosting(env, normalizedHostname);
+		if (hosting.external) {
+			externalDns = true;
+		} else {
+			const [claimedZone] = await db.select({ userId: domains.userId }).from(domains).where(and(
+				eq(domains.zoneId, hosting.zone.id),
+				ne(domains.userId, userId),
+			)).limit(1);
+			if (claimedZone) {
+				throw new Error("Cloudflare zone is already registered to another account");
+			}
 		}
 	}
 	// Email Routing is Cloudflare's way of receiving; another provider brings its own MX,
 	// which its setup in the domain page creates once credentials exist.
 	// A skipped-DNS domain is recorded only: nothing receives or sends until the operator picks providers.
-	const skipDns = options?.skipDns === true;
-	const receivingProvider = skipDns ? "none" : (options?.receivingProvider ?? "cloudflare");
+	const outsideCloudflare = (provider?: "none" | "cloudflare" | "resend" | "ses") => (!provider || provider === "cloudflare" ? "resend" : provider);
+	const receivingProvider = skipDns ? "none" : externalDns ? outsideCloudflare(options?.receivingProvider) : (options?.receivingProvider ?? "cloudflare");
 	// Cloudflare's sending subdomain is only provisioned when Cloudflare is the sender.
-	const requestedSending = skipDns ? "none" : (options?.sendingProvider ?? (options?.enableSending === false ? "none" : "cloudflare"));
+	const requestedSending = skipDns ? "none" : externalDns ? outsideCloudflare(options?.sendingProvider) : (options?.sendingProvider ?? (options?.enableSending === false ? "none" : "cloudflare"));
 	const provisioned = await provisionDomainOnCloudflare(env, hostname, {
 		...options,
+		skipDns: skipDns || externalDns,
 		enableSending: requestedSending === "cloudflare",
 		enableRouting: receivingProvider === "cloudflare" ? (options?.enableRouting ?? true) : false,
 		// Routing is skipped for other receivers, so this only reaches the sending step then.
@@ -99,7 +108,7 @@ export async function addDomainForUser(
 			routingStatus: provisioned.routingStatus ?? null,
 			sendingSubdomainTag: provisioned.sendingSubdomainTag,
 			sendingRequested: skipDns ? false : provisioned.sendingRequested,
-			...(skipDns ? { sendingProvider: "none" as const } : options?.sendingProvider ? { sendingProvider: options.sendingProvider } : existing && existing.sendingProvider !== "none" ? {} : { sendingProvider: provisioned.sendingRequested ? ("cloudflare" as const) : ("none" as const) }),
+			...(skipDns ? { sendingProvider: "none" as const } : externalDns ? { sendingProvider: requestedSending } : options?.sendingProvider ? { sendingProvider: options.sendingProvider } : existing && existing.sendingProvider !== "none" ? {} : { sendingProvider: provisioned.sendingRequested ? ("cloudflare" as const) : ("none" as const) }),
 			sendingEnabled: skipDns ? false : provisioned.sendingEnabled,
 			routingEnabled: skipDns ? false : provisioned.routingEnabled,
 			dnsSkipped: options?.skipDns === true,

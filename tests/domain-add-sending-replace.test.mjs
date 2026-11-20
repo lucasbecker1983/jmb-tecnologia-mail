@@ -21,7 +21,7 @@ const mocks = {
 	"@/lib/domains/manual-dns": "export const getManualDomainDns=()=>{}",
 	"@/lib/domains/rollback": "export async function rollbackDomainProvisioning(){}",
 	"@/lib/domains/sending-status": "export const findSendingSubdomain=()=>null",
-	"@/lib/domains/preflight": "export async function preflightDomain(){}",
+	"@/lib/domains/dns-host": "export async function checkDomainHosting(){return {external:false,zone:{id:'z',name:'example.com'}}}",
 };
 await build({
 	stdin: { contents: "export { addDomainForUser } from './src/lib/domains/service';", resolveDir: root, loader: "ts" },
