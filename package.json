@@ -2,6 +2,10 @@
   "name": "mailflare",
   "version": "0.5.5",
   "author": "JMB Tecnologia",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lucasbecker1983/mailflare-jmb.git"
+  },
   "private": true,
   "scripts": {
     "dev": "npm run db:bundle && vp dev --port 3000",

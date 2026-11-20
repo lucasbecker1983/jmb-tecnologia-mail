@@ -48,7 +48,15 @@ export function PoweredBy({ className = "px-1" }: { className?: string }) {
         >
           Mailflare v{packageJson.version}
         </a>
-        {" · JMB Tecnologia"}
+        {" · JMB Tecnologia · "}
+        <a
+          href="https://github.com/lucasbecker1983/mailflare-jmb"
+          target="_blank"
+          className="hover:underline text-neutral-500"
+          rel="noreferrer"
+        >
+          Código-fonte
+        </a>
       </p>
 	);
 }
