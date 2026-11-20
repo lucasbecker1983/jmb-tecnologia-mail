@@ -38,14 +38,15 @@ export default function CloudflareReceivingConfig({ domainId, routingOk, routing
 					title={t("domains.emailRouting")}
 					hint={t("domains.emailRoutingHint")}
 					action={!routingOk ? (
-						<Button size="sm" variant="outline" className="bg-white" disabled={busy || manual} title={manual ? t("domains.manualDns") : undefined} onClick={() => void setup()}>
-							{busy ? t("domains.settingUp") : t("domains.setup")}
+						<Button size="sm" variant="outline" className="bg-white" disabled={busy} onClick={() => void setup()}>
+							{busy ? t("domains.settingUp") : manual ? t("domains.cfReceivingCheck") : t("domains.setup")}
 						</Button>
 					) : undefined}
 				>
 					{routingLabel}
 				</StatusRow>
 			</ul>
+			{manual && !routingOk && <p className="text-xs text-neutral-500">{t("domains.cfReceivingExternalHint")}</p>}
 			{error && <p role="alert" className="text-xs text-red-600">{error}</p>}
 		</div>
 	);

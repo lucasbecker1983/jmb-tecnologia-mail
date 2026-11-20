@@ -2,7 +2,7 @@ import { and, eq, ne } from "drizzle-orm";
 import { getDb } from "@/db";
 import { domains } from "@/db/schema";
 import { isManualZone } from "@/lib/domains/provision";
-import { checkDomainHosting } from "@/lib/domains/dns-host";
+import { checkDomainHosting, hasPendingCloudflareZone } from "@/lib/domains/dns-host";
 import type { DomainRow } from "@/lib/domains/types";
 import { hasCloudflareCredentials } from "@/lib/runtime";
 
@@ -23,6 +23,11 @@ export async function adoptCloudflareZone(env: CloudflareEnv, domain: DomainRow)
 			await db.update(domains).set({ dnsSkipped: false, status: "active" }).where(eq(domains.id, domain.id));
 		}
 		const where = hosting.dnsHost?.provider ?? "seu provedor de DNS";
+		if (await hasPendingCloudflareZone(env, domain.hostname)) {
+			throw new Error(
+				`${domain.hostname} já foi adicionado à Cloudflare, mas os nameservers ainda são os de ${where}. Troque os nameservers no registro do domínio (ex.: Registro.br) pelos que a Cloudflare indicou e clique de novo depois que a troca propagar.`,
+			);
+		}
 		throw new Error(
 			`O DNS de ${domain.hostname} está em ${where}, fora da Cloudflare, então o app não consegue criar registros nele. Recarregue a página: ela passa a listar os registros para você criar no painel de ${where}.`,
 		);

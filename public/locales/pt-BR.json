@@ -1325,6 +1325,8 @@
 	"domains.noRoutingRecords": "Nenhum registro DNS de roteamento encontrado",
 	"domains.recordLabel": "Registro {label}",
 	"domains.manualDns": "O DNS deste domínio é gerenciado manualmente",
+	"domains.cfReceivingCheck": "Verificar e ativar",
+	"domains.cfReceivingExternalHint": "O DNS deste domínio está fora da Cloudflare. Para receber por aqui, de graça e sem limite, adicione o domínio nesta conta da Cloudflare, troque os nameservers no registro do domínio (ex.: Registro.br) e clique em \"Verificar e ativar\".",
 	"domains.createRecord": "Criar o registro {label}",
 	"domains.settingUp": "Configurando...",
 	"domains.setup": "Configurar",

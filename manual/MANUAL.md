@@ -279,6 +279,19 @@ Para domínios que ficam no Registro.br, na Umbler, na Locaweb etc. O DNS **não
 
 > Trocar o MX faz o provedor antigo parar de receber. Crie as caixas antes e troque o MX por último.
 
+#### 7.2.1 Passar um domínio externo para receber pela Cloudflare
+
+Receber pela Cloudflare é grátis, sem limite de mensagens, e libera a cota e as vagas do Resend e do Maileroo. Para isso o **DNS** do domínio precisa estar na **mesma conta Cloudflare** do aplicativo (o registro do domínio continua onde está, por exemplo no Registro.br).
+
+1. Na Cloudflare: **Adicionar um site → Conectar um domínio**, plano **Free**. Pare na tela dos nameservers.
+2. Confira os registros que a Cloudflare importou contra os do provedor atual. Deixe **todos como "DNS only"** (nuvem cinza): o proxy laranja muda o comportamento de sites na Vercel e de outros serviços.
+3. Inclua o domínio nas permissões do `CF_TOKEN` (seção 4.4). O valor do token não muda.
+4. No registro do domínio (Registro.br: **DNS → Alterar servidores DNS**), troque os nameservers pelos dois que a Cloudflare indicou. Não apague nada no provedor antigo até a Cloudflare marcar o domínio como **Ativo**.
+5. No aplicativo: **Administração → Domínios →** o domínio → **Configurar o recebimento de e-mails → Cloudflare Email Routing → Verificar e ativar**. O sistema reconhece a zona, pede confirmação para trocar o MX antigo e liga o roteamento.
+6. Depois de testar um e-mail, use **Remover configuração** no card do Resend para liberar o recebimento dele.
+
+> Se a Cloudflare ainda não ativou o domínio, o botão avisa para esperar a troca dos nameservers.
+
 ### 7.3 Reserva do Resend: Maileroo (recomendado)
 
 Se o Resend falhar (fora do ar, limite diário estourado, chave recusada), o sistema **envia automaticamente pelo Maileroo**. Nos domínios fora da Cloudflare, o Maileroo também pode ser um **MX de reserva**, que recebe se o Resend estiver inacessível. O plano grátis do Maileroo tem 3.000 envios e 1.000 recebimentos por mês, em até 2 domínios.

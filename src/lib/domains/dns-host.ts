@@ -67,9 +67,20 @@ export async function checkDomainHosting(env: CloudflareEnv, hostname: string, o
 	if (zone) return { hostname: normalized, zone, external: false };
 	const dnsHost = await detectDnsHost(normalized);
 	if (dnsHost.cloudflare) {
+		if (await findZoneByHostname(env, normalized, "pending").catch(() => null)) {
+			throw new Error(
+				`O DNS de "${normalized}" já aponta para a Cloudflare, mas a zona ainda está aguardando ativação. Tente de novo em alguns minutos.`,
+			);
+		}
 		throw new Error(
 			`O DNS de "${normalized}" está na Cloudflare, mas o token CF_TOKEN não enxerga essa zona. Inclua o domínio nas permissões do token ou use a conta Cloudflare onde ele está.`,
 		);
 	}
 	return { ...manualDomainPreflight(normalized), external: true, dnsHost };
+}
+
+/** A zone already added to this Cloudflare account that still waits for the nameserver change. */
+export async function hasPendingCloudflareZone(env: CloudflareEnv, hostname: string): Promise<boolean> {
+	if (!hasCloudflareCredentials(env)) return false;
+	return !!(await findZoneByHostname(env, normalizeHostname(hostname), "pending").catch(() => null));
 }

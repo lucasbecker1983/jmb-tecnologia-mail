@@ -37,7 +37,7 @@ async function bundle(entry, name, mocks) {
 }
 
 const hostMocks = {
-	"@/lib/cloudflare-api": "export async function findZoneByHostname(){if(globalThis.__zoneError)throw new Error(globalThis.__zoneError);return globalThis.__zone??null}",
+	"@/lib/cloudflare-api": "export async function findZoneByHostname(e,h,s){if(globalThis.__zoneError)throw new Error(globalThis.__zoneError);return (s==='pending'?globalThis.__pendingZone:globalThis.__zone)??null}",
 	"@/lib/dns-query": "export async function queryDns(name,type){globalThis.__queries.push(name+' '+type);if(globalThis.__nsError)throw new Error('doh down');return globalThis.__ns[name]??[]}",
 	"@/lib/runtime": "export const hasCloudflareCredentials=(env)=>!!env.CF_TOKEN;",
 	"@/lib/domains/preflight": "export const manualDomainPreflight=(h)=>({hostname:h,zone:{id:'manual',name:h}});",
@@ -48,6 +48,7 @@ const env = { CF_TOKEN: "token" };
 
 beforeEach(() => {
 	globalThis.__zone = null;
+	globalThis.__pendingZone = null;
 	globalThis.__zoneError = null;
 	globalThis.__ns = {};
 	globalThis.__nsError = false;
@@ -72,6 +73,12 @@ test("no zone and Registro.br nameservers make the domain external", async () =>
 test("Cloudflare nameservers without a visible zone ask to fix the token instead of going external", async () => {
 	globalThis.__ns = { "example.com": ["ada.ns.cloudflare.com.", "bob.ns.cloudflare.com."] };
 	await assert.rejects(checkDomainHosting(env, "example.com"), /CF_TOKEN/);
+});
+
+test("Cloudflare nameservers with a zone still pending say to wait instead of blaming the token", async () => {
+	globalThis.__ns = { "example.com": ["ada.ns.cloudflare.com.", "bob.ns.cloudflare.com."] };
+	globalThis.__pendingZone = { id: "zp", name: "example.com" };
+	await assert.rejects(checkDomainHosting(env, "example.com"), /aguardando ativação/);
 });
 
 test("a Cloudflare API error is reported, never turned into an external domain", async () => {
@@ -112,7 +119,7 @@ const serviceMocks = {
 	"@/lib/domains/manual-dns": "export const getManualDomainDns=()=>{}",
 	"@/lib/domains/rollback": "export async function rollbackDomainProvisioning(){}",
 	"@/lib/domains/sending-status": "export const findSendingSubdomain=()=>null",
-	"@/lib/domains/dns-host": "export async function checkDomainHosting(){return globalThis.__hosting}",
+	"@/lib/domains/dns-host": "export async function checkDomainHosting(){return globalThis.__hosting}export async function hasPendingCloudflareZone(){return !!globalThis.__pending}",
 	"@/lib/runtime": "export const hasCloudflareCredentials=(env)=>!!env.CF_TOKEN;export const isNodeRuntime=()=>false;",
 };
 const { addDomainForUser } = await bundle("export { addDomainForUser } from './src/lib/domains/service';", "service", serviceMocks);
@@ -144,7 +151,7 @@ const adoptMocks = {
 	"@/db/schema": "export const domains={id:'id',zoneId:'zoneId',userId:'userId'};",
 	"@/db": "const q={from(){return q},where(){return q},limit(){return Promise.resolve([])}};export function getDb(){return {select(){return q},update(){return {set(v){globalThis.__updates.push(v);return {where(){return Promise.resolve()}}}}}}}",
 	"@/lib/domains/provision": "export const isManualZone=(id)=>id==='manual';",
-	"@/lib/domains/dns-host": "export async function checkDomainHosting(){return globalThis.__hosting}",
+	"@/lib/domains/dns-host": "export async function checkDomainHosting(){return globalThis.__hosting}export async function hasPendingCloudflareZone(){return !!globalThis.__pending}",
 	"@/lib/runtime": "export const hasCloudflareCredentials=(env)=>!!env.CF_TOKEN;",
 };
 const { adoptCloudflareZone } = await bundle("export { adoptCloudflareZone } from './src/lib/domains/adopt-zone';", "adopt-zone", adoptMocks);
@@ -155,6 +162,24 @@ test("a skipped domain whose DNS is elsewhere becomes external with a clear mess
 	const domain = { id: "d1", userId: "u1", hostname: "infinitytea.com.br", zoneId: "manual", dnsSkipped: true, status: "pending" };
 	await assert.rejects(adoptCloudflareZone(env, domain), /está em Umbler, fora da Cloudflare/);
 	assert.deepEqual(globalThis.__updates, [{ dnsSkipped: false, status: "active" }]);
+});
+
+test("an external domain already added to Cloudflare but not delegated yet says to change the nameservers", async () => {
+	globalThis.__updates = [];
+	globalThis.__pending = true;
+	globalThis.__hosting = { external: true, zone: { id: "manual", name: "infinitytea.com.br" }, dnsHost: { provider: "Umbler", nameservers: [], cloudflare: false } };
+	const domain = { id: "d3", userId: "u1", hostname: "infinitytea.com.br", zoneId: "manual", dnsSkipped: false, status: "active" };
+	await assert.rejects(adoptCloudflareZone(env, domain), /já foi adicionado à Cloudflare, mas os nameservers ainda são os de Umbler/);
+	assert.deepEqual(globalThis.__updates, []);
+	globalThis.__pending = false;
+});
+
+test("an external domain whose DNS moved to this Cloudflare account is adopted", async () => {
+	globalThis.__updates = [];
+	globalThis.__hosting = { external: false, zone: { id: "z7", name: "infinitytea.com.br" } };
+	const adopted = await adoptCloudflareZone(env, { id: "d4", userId: "u1", hostname: "infinitytea.com.br", zoneId: "manual", dnsSkipped: false, status: "active" });
+	assert.equal(adopted.zoneId, "z7");
+	assert.deepEqual(globalThis.__updates, [{ zoneId: "z7" }]);
 });
 
 test("a skipped domain that is on this Cloudflare account is still adopted", async () => {

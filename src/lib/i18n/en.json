@@ -1357,6 +1357,8 @@
 	"domains.noRoutingRecords": "No routing DNS records found",
 	"domains.recordLabel": "{label} record",
 	"domains.manualDns": "DNS for this domain is managed manually",
+	"domains.cfReceivingCheck": "Check and set up",
+	"domains.cfReceivingExternalHint": "This domain's DNS is outside Cloudflare. To receive here for free and without limits, add the domain to this Cloudflare account, change its nameservers at the registrar and click \"Check and set up\".",
 	"domains.createRecord": "Create the {label} record",
 	"domains.settingUp": "Setting up...",
 	"domains.setup": "Setup",

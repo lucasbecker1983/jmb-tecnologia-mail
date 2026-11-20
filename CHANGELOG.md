@@ -3,6 +3,12 @@
 Versão própria (fork) do [Mailflare](https://github.com/hieunc229/mailflare), mantida pela JMB Tecnologia sob a licença AGPLv3.
 O histórico do projeto original fica na pasta `changelog/`.
 
+## v2026.11.20-13
+
+- **Receber pela Cloudflare em domínio externo.** Em Administração → Domínios → Configurar o recebimento → Cloudflare Email Routing, o botão deixou de ficar travado em domínios com DNS fora da Cloudflare: agora é **"Verificar e ativar"**, com a explicação de como trazer o DNS para a Cloudflare. Quando o DNS já está na conta, o domínio é reconhecido, o MX antigo é trocado (com confirmação) e o roteamento é ligado.
+- Mensagens claras quando a zona já foi criada na Cloudflare mas os nameservers ainda não foram trocados ou ainda não ativaram, em vez de culpar o token.
+- Manual: nova seção 7.2.1 (passar um domínio externo para receber pela Cloudflare).
+
 ## v2026.11.20-12
 
 - Removido o botão "Upgrade" do topo das páginas (caixa de entrada, agenda, arquivos, configurações e administração) e o aviso de "licença necessária" da tela de contas. Nesta versão não existe plano pago.

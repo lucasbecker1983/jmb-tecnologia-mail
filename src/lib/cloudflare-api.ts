@@ -74,11 +74,12 @@ export async function getZone(
 export async function findZoneByHostname(
 	env: CloudflareEnv,
 	hostname: string,
+	status: "active" | "pending" = "active",
 ): Promise<{ id: string; name: string } | null> {
 	for (const candidate of getZoneLookupCandidates(hostname)) {
 		const zones = await cfRequest<{ id: string; name: string }[]>(
 			env,
-			`/zones?name=${encodeURIComponent(candidate)}&status=active`,
+			`/zones?name=${encodeURIComponent(candidate)}&status=${status}`,
 		);
 		const zone = zones.find((z) => z.name === candidate);
 		if (zone) return zone;
