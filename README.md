@@ -1,8 +1,8 @@
-<img src="public/icon-192.png" alt="Mailflare" width="96" />
+<img src="public/icon-192.png" alt="JMB Tecnologia Mail" width="96" />
 
-> ## MailFlare JMB
+> ## JMB Tecnologia Mail
 >
-> Esta é a versão da **JMB Tecnologia**, baseada no Mailflare original. Ela tem **todas as funções liberadas**, sem licença paga: contas ilimitadas, caixas compartilhadas, encaminhamento, marca própria e vários domínios. É compartilhada **de graça** com amigos e parceiros, sem venda, sob a mesma licença AGPLv3.
+> E-mail, agenda e arquivos da **JMB Tecnologia**, baseado no projeto de código aberto Mailflare. Ela tem **todas as funções liberadas**, sem licença paga: contas ilimitadas, caixas compartilhadas, encaminhamento, marca própria e vários domínios. É compartilhada **de graça** com amigos e parceiros, sem venda, sob a mesma licença AGPLv3.
 >
 > **Para instalar, siga o manual:** [manual/MANUAL.md](manual/MANUAL.md) ou [PDF](manual/MANUAL.pdf).
 >

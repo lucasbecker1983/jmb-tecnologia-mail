@@ -59,7 +59,7 @@ function recurrenceRule(event: FeedEvent): string | null {
 
 export function buildCalendarFeed(events: FeedEvent[], options: { name: string; now?: Date }): string {
 	const stamp = utc(options.now ?? new Date());
-	const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Mailflare//Calendar//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+	const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//JMB Tecnologia Mail//Calendar//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
 		`X-WR-CALNAME:${escapeIcsText(options.name)}`, "REFRESH-INTERVAL;VALUE=DURATION:PT1H", "X-PUBLISHED-TTL:PT1H"];
 	for (const event of events) {
 		const rule = recurrenceRule(event);

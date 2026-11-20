@@ -440,7 +440,7 @@ export function buildReplyIcs(invite: ParsedInvite, attendee: string, response: 
 	const dateValue = (name: string, value: Date) => invite.allDay
 		? `${name};VALUE=DATE:${zonedDateFields(value, normalizeTimeZone(invite.recipientZone)).toISOString().slice(0, 10).replace(/-/g, "")}`
 		: `${name}:${formatIcsUtc(value)}`;
-	const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Mailflare//Calendar//EN", "METHOD:REPLY", "BEGIN:VEVENT", `UID:${stripControls(invite.uid)}`, `DTSTAMP:${formatIcsUtc(new Date())}`,
+	const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//JMB Tecnologia Mail//Calendar//EN", "METHOD:REPLY", "BEGIN:VEVENT", `UID:${stripControls(invite.uid)}`, `DTSTAMP:${formatIcsUtc(new Date())}`,
 		dateValue("DTSTART", invite.startsAt),
 		...(invite.recurrenceId ? [dateValue("RECURRENCE-ID", invite.recurrenceId)] : []),
 		`SEQUENCE:${invite.sequence}`,

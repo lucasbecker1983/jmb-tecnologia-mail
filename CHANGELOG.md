@@ -1,7 +1,16 @@
-# Changelog — MailFlare JMB Tecnologia
+# Changelog — JMB Tecnologia Mail
 
 Versão própria (fork) do [Mailflare](https://github.com/hieunc229/mailflare), mantida pela JMB Tecnologia sob a licença AGPLv3.
 O histórico do projeto original fica na pasta `changelog/`.
+
+## v2026.11.20-5
+
+- Novo nome: **JMB Tecnologia Mail** em todo o app (nome padrão, títulos, remetente dos e-mails do sistema, notificações, convites de agenda, textos em todos os idiomas). O valor antigo "Mailflare" salvo no banco é tratado como "não personalizado".
+- Novo ícone nas cores da JMB (azul, verde e roxo): fonte em `brand/icone.svg`, gerador em `brand/gerar-icones.mjs` (ícones normais, maskable, Apple e favicon).
+- PWA para celular: manifesto em português ("JMB Mail"), ícones maskable para Android, ícone do iPhone e atalhos (Caixa de entrada, Escrever e-mail, Agenda).
+- Rodapé: "JMB Tecnologia Mail vX · Código-fonte", sem link para o site do original.
+- Nomes técnicos internos (`mailflare`: Worker, banco, filas, cookies, cabeçalhos `X-Mailflare-*`) mantidos de propósito para não quebrar recebimento, sessões e compatibilidade.
+- Manual: instalação no celular, notificações (chaves VAPID) e nome novo.
 
 ## v2026.11.20-4
 

@@ -1,4 +1,4 @@
-# Manual do MailFlare JMB
+# Manual do JMB Tecnologia Mail
 
 **E-mail, agenda e arquivos com domínio próprio, de graça, na sua conta Cloudflare.**
 
@@ -8,7 +8,7 @@ Versão do manual: novembro de 2026 · Código-fonte: <https://github.com/lucasb
 
 ## 1. O que é
 
-O **MailFlare JMB** é uma versão do [Mailflare](https://github.com/hieunc229/mailflare), um sistema de código aberto de e-mail com domínio próprio (tipo um Google Workspace caseiro), com caixas de e-mail, agenda, agendamentos e arquivos.
+O **JMB Tecnologia Mail** é o sistema de e-mail da JMB Tecnologia, baseado no [Mailflare](https://github.com/hieunc229/mailflare), um projeto de código aberto de e-mail com domínio próprio (tipo um Google Workspace caseiro), com caixas de e-mail, agenda, agendamentos e arquivos.
 
 A JMB Tecnologia mantém esta versão com **todas as funções liberadas**, sem licença paga:
 
@@ -17,7 +17,10 @@ A JMB Tecnologia mantém esta versão com **todas as funções liberadas**, sem 
 - encaminhamento de e-mail;
 - personalização da marca (logo e cores);
 - vários domínios na mesma instalação;
-- interface em **português do Brasil** por padrão (outros idiomas no seletor de idioma).
+- interface em **português do Brasil** por padrão (outros idiomas no seletor de idioma);
+- aplicativo para **celular** (PWA), com ícone próprio e notificações de e-mail novo.
+
+> **Nomes técnicos:** por dentro, o Worker, o banco, o bucket e as filas continuam se chamando `mailflare`. Esses nomes aparecem nos comandos deste manual e **não devem ser trocados**, porque o recebimento de e-mail depende deles. Quem usa o sistema só vê "JMB Tecnologia Mail".
 
 O projeto é **distribuído de graça para amigos e parceiros. Ele não é vendido.** O código é aberto, sob a licença AGPLv3 (veja a seção 11).
 
@@ -200,6 +203,18 @@ printf '%s' 'https://mailflare.suaempresa.workers.dev' | npx wrangler secret put
 - `CF_TOKEN` é o token de runtime da seção 4.4.
 - `APP_URL` é o endereço do seu aplicativo. O Resend usa esse endereço para entregar os e-mails recebidos.
 
+**Notificações no celular (recomendado):** gere uma vez o par de chaves de notificação e guarde no `.dev.vars` (arquivo ignorado pelo git). Mantenha sempre o mesmo par, porque trocar as chaves desliga as notificações de quem já ativou.
+
+```bash
+npm run push:keys > .vapid.tmp   # gera VAPID_PUBLIC_KEY e VAPID_PRIVATE_KEY
+grep -E '^VAPID_(PUBLIC|PRIVATE)_KEY=' .vapid.tmp >> .dev.vars
+echo 'VAPID_SUBJECT=mailto:contato@suaempresa.com.br' >> .dev.vars
+rm .vapid.tmp && chmod 600 .dev.vars
+for k in VAPID_PUBLIC_KEY VAPID_PRIVATE_KEY VAPID_SUBJECT; do
+  grep "^$k=" .dev.vars | cut -d= -f2- | tr -d '\n' | npx wrangler secret put $k
+done
+```
+
 A chave do Resend pode ser colada depois, na própria tela do aplicativo (seção 7).
 
 ---
@@ -281,9 +296,25 @@ Uma caixa criada para o administrador só abre com o login do administrador. Par
 3. Isso cria, ao mesmo tempo, o login `maria@seudominio.com.br` e a caixa dela. A pessoa entra com esse e-mail e essa senha.
 4. Para ela também ver uma caixa compartilhada (ex.: `financeiro@`), dê o acesso na própria caixa compartilhada.
 
-### 8.3 Aplicativos de e-mail no celular ou no computador
+### 8.3 Instalar no celular
 
-O sistema usa o protocolo **JMAP**, e **não** tem IMAP/POP. Outlook e o app do Gmail **não funcionam**. Em **Configurações → App passwords** dá para gerar uma senha de aplicativo para clientes compatíveis com JMAP. O jeito mais simples continua sendo o navegador: o site funciona bem no celular e pode ser instalado como app (PWA).
+O JMB Tecnologia Mail é um **PWA**: instala direto do navegador, com ícone na tela inicial e sem loja de aplicativos.
+
+**Android (Chrome):**
+1. Abra o endereço do sistema (ex.: `https://webmail.suaempresa.com.br`) e entre com o seu e-mail e a sua senha.
+2. Toque no menu **⋮** e depois em **Instalar app** (ou **Adicionar à tela inicial**).
+3. O ícone **JMB Mail** aparece na tela inicial.
+
+**iPhone (Safari):**
+1. Abra o endereço no **Safari** e entre.
+2. Toque em **Compartilhar** (quadrado com seta) e depois em **Adicionar à Tela de Início**.
+3. Confirme o nome **JMB Mail**.
+
+**Notificações de e-mail novo:** dentro do app, abra **Configurações → Entrada** e ative as notificações push (alertas mesmo com o app fechado). No iPhone isso só funciona com o app instalado na Tela de Início (iOS 16.4 ou mais novo).
+
+### 8.4 Outros aplicativos de e-mail
+
+O sistema usa o protocolo **JMAP**, e **não** tem IMAP/POP. Outlook e o app do Gmail **não funcionam**. Em **Configurações → Senhas de aplicativo** dá para gerar uma senha para clientes compatíveis com JMAP. Para a maioria das pessoas, o app instalado (seção 8.3) é o melhor caminho.
 
 ---
 
@@ -308,7 +339,7 @@ Se o `git pull` reclamar do `wrangler.jsonc`, é porque a atualização mudou es
 3. Rode `git pull`.
 4. Coloque o ID de volta no `wrangler.jsonc` e rode de novo `git update-index --skip-worktree wrangler.jsonc`.
 
-> **Nunca use o botão "Update Mailflare"** do painel. Ele baixa o Mailflare original e desfaz as liberações desta versão. Nesta versão o mecanismo desse botão foi removido.
+> **Nunca use o botão de atualização automática** da tela de Administração (antigo "Update Mailflare"). Ele baixaria o Mailflare original e desfaria as mudanças desta versão. O mecanismo desse botão foi removido nesta versão. Atualize sempre pelos comandos acima.
 
 ### 9.2 Para quem mantém esta versão (JMB)
 

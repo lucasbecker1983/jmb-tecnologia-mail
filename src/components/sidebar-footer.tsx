@@ -34,21 +34,19 @@ export function SidebarFooter() {
   );
 }
 
-/** The "Powered by Mailflare vX" credit, shared by the mail and Drive sidebars. */
+/** Product credit and AGPL source link, shared by the mail and Drive sidebars. */
 export function PoweredBy({ className = "px-1" }: { className?: string }) {
-	const { t } = useLanguage();
 	return (
       <p className={`${className} text-[11px] text-neutral-500`}>
-        {t("navigation.poweredBy")}{" "}
         <a
-          href={`https://mailflare.co/?ref=${typeof window !== "undefined" ? location.hostname : ""}&v=${packageJson.version}`}
+          href="https://jmbtecnologia.com.br"
           target="_blank"
           className="hover:underline text-neutral-500"
           rel="noreferrer"
         >
-          Mailflare v{packageJson.version}
+          JMB Tecnologia Mail v{packageJson.version}
         </a>
-        {" · JMB Tecnologia · "}
+        {" · "}
         <a
           href="https://github.com/lucasbecker1983/mailflare-jmb"
           target="_blank"

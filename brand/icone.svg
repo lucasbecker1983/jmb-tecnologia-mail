@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="fundo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e3554"/>
+      <stop offset="1" stop-color="#2e1a4a"/>
+    </linearGradient>
+    <linearGradient id="jmb" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2a93d5"/>
+      <stop offset="0.5" stop-color="#8cc63f"/>
+      <stop offset="1" stop-color="#9d5cd6"/>
+    </linearGradient>
+    <linearGradient id="brilho" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.14"/>
+      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect id="base" width="512" height="512" rx="112" fill="url(#fundo)"/>
+  <rect width="512" height="512" rx="112" fill="url(#brilho)"/>
+  <rect x="100" y="148" width="312" height="216" rx="30" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-width="24"/>
+  <polyline points="122,176 256,284 390,176" fill="none" stroke="url(#jmb)" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

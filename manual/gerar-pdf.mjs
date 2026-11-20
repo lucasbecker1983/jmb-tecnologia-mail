@@ -35,7 +35,7 @@ blockquote p { margin: 3pt 0; }
 hr { border: none; border-top: 1px solid #d9e2ec; margin: 16pt 0; }
 `;
 
-const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Manual do MailFlare JMB</title><style>${css}</style></head><body>${body}</body></html>`;
+const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Manual do JMB Tecnologia Mail</title><style>${css}</style></head><body>${body}</body></html>`;
 const htmlPath = join(tmpdir(), `mailflare-manual-${process.pid}.html`);
 writeFileSync(htmlPath, html);
 
@@ -49,7 +49,7 @@ try {
 		printBackground: true,
 		displayHeaderFooter: true,
 		headerTemplate: "<span></span>",
-		footerTemplate: `<div style="width:100%;font-size:8px;color:#829ab1;padding:0 16mm;display:flex;justify-content:space-between;font-family:Arial,sans-serif"><span>MailFlare JMB · Manual · JMB Tecnologia</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>`,
+		footerTemplate: `<div style="width:100%;font-size:8px;color:#829ab1;padding:0 16mm;display:flex;justify-content:space-between;font-family:Arial,sans-serif"><span>JMB Tecnologia Mail · Manual</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>`,
 		margin: { top: "18mm", bottom: "20mm", left: "16mm", right: "16mm" },
 	});
 } finally {
