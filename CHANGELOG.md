@@ -3,6 +3,11 @@
 Versão própria (fork) do [Mailflare](https://github.com/hieunc229/mailflare), mantida pela JMB Tecnologia sob a licença AGPLv3.
 O histórico do projeto original fica na pasta `changelog/`.
 
+## v2026.11.20-9
+
+- Envios pela reserva Maileroo saem com `tracking: false` (sem reescrever links nem pixel de abertura).
+- Reserva ativada na instalação JMB: domínio `jmbtecnologia.com.br` verificado no Maileroo e chave de envio configurada. Teste real: DKIM do domínio e DMARC passando, link intacto, In-Reply-To/References preservados, chegada em ~2,6 s; o Maileroo recusa Message-ID próprio (já descartado pelo código).
+
 ## v2026.11.20-8
 
 - **Maileroo como reserva do Resend.** Se o Resend recusar por limite (429), chave (401/403) ou falha dele (5xx), a mensagem sai pelo Maileroo na mesma tentativa; erro de rede repete o Resend uma vez com a mesma chave de idempotência antes da reserva; erro da própria mensagem (400/422) nunca vai para a reserva. Chaves: `MAILEROO_SENDING_KEYS` (JSON domínio→chave) ou `MAILEROO_API_KEY`. Cada uso da reserva fica no log.

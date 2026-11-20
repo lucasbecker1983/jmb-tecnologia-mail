@@ -76,6 +76,7 @@ test("the payload uses Maileroo's address objects, drops Message-ID and trims lo
 	assert.deepEqual(payload.to, [{ address: "a@x.com" }]);
 	assert.deepEqual(payload.cc, [{ address: "ana@x.com", display_name: "Ana" }]);
 	assert.equal(payload.plain, "Oi");
+	assert.equal(payload.tracking, false);
 	assert.equal("Message-ID" in payload.headers, false);
 	assert.ok(payload.headers.References.length <= 768);
 	assert.ok(payload.headers.References.startsWith("<ref-0-"), "keeps the thread root");

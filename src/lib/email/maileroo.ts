@@ -76,6 +76,8 @@ export function mailerooPayload(message: OutboundProviderMessage) {
 		...(message.cc?.length ? { cc: message.cc.map(emailObject) } : {}),
 		...(message.bcc?.length ? { bcc: message.bcc.map(emailObject) } : {}),
 		subject: message.subject.slice(0, 255),
+		// Never let the fallback rewrite links or add an open pixel the sender did not ask for.
+		tracking: false,
 		...(message.html ? { html: message.html } : {}),
 		...(message.text ? { plain: message.text } : {}),
 		...(Object.keys(headers).length ? { headers } : {}),
