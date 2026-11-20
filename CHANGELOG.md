@@ -3,6 +3,13 @@
 Versão própria (fork) do [Mailflare](https://github.com/hieunc229/mailflare), mantida pela JMB Tecnologia sob a licença AGPLv3.
 O histórico do projeto original fica na pasta `changelog/`.
 
+## v2026.11.20-11
+
+- O endereço raiz (ex.: `webmail.infinitytea.com.br`) vai direto para o login, ou para a caixa de entrada se já houver sessão. A página de apresentação do projeto original deixou de aparecer.
+- Login em `webmail.<domínio>` (domínio cadastrado no app): o campo mostra `@domínio` fixo e basta digitar o usuário; e-mail completo também é aceito. O domínio é decidido no servidor.
+- Campo de senha do login com botão mostrar/ocultar.
+- Acesso por `http://` agora redireciona para `https://` em todos os endereços do webmail. Os domínios de clientes (Cloudflare for SaaS) não recebiam o redirecionamento HTTPS da zona.
+
 ## v2026.11.20-10
 
 - Corrigido: domínio adicionado com "Pular configuração de DNS" e DNS fora da Cloudflare dava "Zone not found" nos botões "Configurar". Agora ele é convertido em externo (ativo, sem o aviso de DNS pulado) e a mensagem diz em qual provedor criar os registros.

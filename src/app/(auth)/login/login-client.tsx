@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TurnstileField } from "@/components/auth/turnstile";
+import { PasswordInput } from "@/components/auth/password-input";
+import { LoginEmailField } from "./login-email-field";
 import { authErrorText } from "@/lib/auth/error-messages";
 import { isPasskeyCancellation } from "@/lib/auth/webauthn/browser-errors";
 import {
@@ -27,7 +29,7 @@ import {
 	submitPasskeyMfa,
 } from "./utils";
 
-export function LoginClient({ adding = false }: { adding?: boolean }) {
+export function LoginClient({ adding = false, loginDomain = null }: { adding?: boolean; loginDomain?: string | null }) {
   const { t } = useLanguage();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -273,15 +275,7 @@ export function LoginClient({ adding = false }: { adding?: boolean }) {
       <form method="post" onSubmit={onSubmit} className="space-y-5">
         <div className="space-y-2">
           <Label htmlFor="email">{t("auth.email")}</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="username webauthn"
-            aria-invalid={error ? true : undefined}
-            aria-describedby={error ? "login-error" : undefined}
-            required
-          />
+          <LoginEmailField domain={loginDomain} invalid={!!error} describedBy={error ? "login-error" : undefined} />
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -290,10 +284,9 @@ export function LoginClient({ adding = false }: { adding?: boolean }) {
               {t("auth.forgotPassword")}
             </Link>
           </div>
-          <Input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
             autoComplete="current-password"
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? "login-error" : undefined}

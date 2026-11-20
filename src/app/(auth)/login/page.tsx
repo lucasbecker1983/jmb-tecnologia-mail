@@ -6,6 +6,7 @@ import { getUserFromSession, SESSION_COOKIE } from "@/lib/auth/session";
 import { getEnv } from "@/lib/cloudflare";
 import { authPageMetadata } from "../auth-metadata";
 import { LoginClient } from "./login-client";
+import { getLoginDomain } from "./login-domain";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
 	return (
 		<AuthGuard mode="public" allowAuthenticated={adding}>
-			<LoginClient adding={adding} />
+			<LoginClient adding={adding} loginDomain={await getLoginDomain(env)} />
 		</AuthGuard>
 	);
 }

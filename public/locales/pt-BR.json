@@ -868,6 +868,8 @@
 	"message.previous.sent": "Mensagem anterior enviada em {date}",
 	"auth.email": "E-mail",
 	"auth.password": "Senha",
+	"auth.showPassword": "Mostrar senha",
+	"auth.hidePassword": "Ocultar senha",
 	"auth.signIn": "Entrar",
 	"auth.signingIn": "Entrando...",
 	"auth.loginFailed": "Falha no login",

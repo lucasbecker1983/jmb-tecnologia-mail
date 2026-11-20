@@ -44,6 +44,12 @@ export { RealtimeHub } from "./src/lib/realtime/hub";
 
 export default {
 	async fetch(request: Request, rawEnv: CloudflareEnv, ctx: ExecutionContext) {
+		// JMB fork: never serve the webmail over plain HTTP; custom hostnames do not get the zone's HTTPS redirect.
+		const requested = new URL(request.url);
+		if (requested.protocol === "http:" && requested.hostname !== "localhost" && requested.hostname !== "127.0.0.1") {
+			requested.protocol = "https:";
+			return Response.redirect(requested.toString(), 301);
+		}
 		// Reads go through a D1 session anchored at the client's bookmark cookie so D1 can serve
 		// them from read replicas; email/queue/scheduled below keep primary reads on purpose.
 		const d1Session = withD1ReadSession(rawEnv, request);
