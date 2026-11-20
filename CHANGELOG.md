@@ -3,6 +3,10 @@
 Versão própria (fork) do [Mailflare](https://github.com/hieunc229/mailflare), mantida pela JMB Tecnologia sob a licença AGPLv3.
 O histórico do projeto original fica na pasta `changelog/`.
 
+## v2026.11.20-12
+
+- Removido o botão "Upgrade" do topo das páginas (caixa de entrada, agenda, arquivos, configurações e administração) e o aviso de "licença necessária" da tela de contas. Nesta versão não existe plano pago.
+
 ## v2026.11.20-11
 
 - O endereço raiz (ex.: `webmail.infinitytea.com.br`) vai direto para o login, ou para a caixa de entrada se já houver sessão. A página de apresentação do projeto original deixou de aparecer.
