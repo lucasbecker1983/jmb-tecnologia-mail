@@ -1,5 +1,12 @@
 <img src="public/icon-192.png" alt="Mailflare" width="96" />
 
+> ## MailFlare JMB
+>
+> Esta é a versão da **JMB Tecnologia**, baseada no Mailflare original. Ela tem **todas as funções liberadas**, sem licença paga: contas ilimitadas, caixas compartilhadas, encaminhamento, marca própria e vários domínios. É compartilhada **de graça** com amigos e parceiros, sem venda, sob a mesma licença AGPLv3.
+>
+> **Para instalar, siga o manual:** [manual/MANUAL.md](manual/MANUAL.md) ou [PDF](manual/MANUAL.pdf).
+>
+> O botão "Deploy to Cloudflare" e as instruções em inglês abaixo são do projeto original e instalam a versão **com** as limitações. Use o manual. As mudanças desta versão estão no [CHANGELOG.md](CHANGELOG.md).
 
 # Mailflare
 

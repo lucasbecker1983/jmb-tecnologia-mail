@@ -3,6 +3,12 @@
 Versão própria (fork) do [Mailflare](https://github.com/hieunc229/mailflare), mantida pela JMB Tecnologia sob a licença AGPLv3.
 O histórico do projeto original fica na pasta `changelog/`.
 
+## v2026.11.20-3
+
+- Manual de instalação e uso em português: `manual/MANUAL.md` e `manual/MANUAL.pdf` (gerado com `node manual/gerar-pdf.mjs`).
+- README com aviso da versão JMB e link para o manual.
+- `wrangler.jsonc` genérico, sem o `database_id` desta instalação, para outras pessoas instalarem na própria conta.
+
 ## v2026.11.20-2
 
 - Código-fonte publicado em https://github.com/lucasbecker1983/mailflare-jmb, com link "Código-fonte" no rodapé (exigência da AGPL).
