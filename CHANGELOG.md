@@ -3,6 +3,10 @@
 Versão própria (fork) do [Mailflare](https://github.com/hieunc229/mailflare), mantida pela JMB Tecnologia sob a licença AGPLv3.
 O histórico do projeto original fica na pasta `changelog/`.
 
+## v2026.11.20-6
+
+- Repositório renomeado para https://github.com/lucasbecker1983/jmb-tecnologia-mail (o endereço antigo `mailflare-jmb` redireciona). Links do rodapé, do `package.json` e do manual atualizados.
+
 ## v2026.11.20-5
 
 - Novo nome: **JMB Tecnologia Mail** em todo o app (nome padrão, títulos, remetente dos e-mails do sistema, notificações, convites de agenda, textos em todos os idiomas). O valor antigo "Mailflare" salvo no banco é tratado como "não personalizado".

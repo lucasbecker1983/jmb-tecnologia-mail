@@ -2,7 +2,7 @@
 
 **E-mail, agenda e arquivos com domínio próprio, de graça, na sua conta Cloudflare.**
 
-Versão do manual: novembro de 2026 · Código-fonte: <https://github.com/lucasbecker1983/mailflare-jmb>
+Versão do manual: novembro de 2026 · Código-fonte: <https://github.com/lucasbecker1983/jmb-tecnologia-mail>
 
 ---
 
@@ -124,8 +124,8 @@ Crie em **Manage Account → Account API Tokens → Create Token**. São **dois 
 ### 5.1 Baixar o código
 
 ```bash
-git clone https://github.com/lucasbecker1983/mailflare-jmb.git mailflare
-cd mailflare
+git clone https://github.com/lucasbecker1983/jmb-tecnologia-mail.git
+cd jmb-tecnologia-mail
 npm install
 ```
 
@@ -323,7 +323,7 @@ O sistema usa o protocolo **JMAP**, e **não** tem IMAP/POP. Outlook e o app do 
 ### 9.1 Para quem instalou a partir deste repositório
 
 ```bash
-cd mailflare
+cd jmb-tecnologia-mail
 git pull
 npm install
 set -a; . ./.env.deploy; set +a

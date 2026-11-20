@@ -48,7 +48,7 @@ export function PoweredBy({ className = "px-1" }: { className?: string }) {
         </a>
         {" · "}
         <a
-          href="https://github.com/lucasbecker1983/mailflare-jmb"
+          href="https://github.com/lucasbecker1983/jmb-tecnologia-mail"
           target="_blank"
           className="hover:underline text-neutral-500"
           rel="noreferrer"
